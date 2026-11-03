@@ -2,31 +2,143 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>BeamShare</title>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; padding: 24px; background: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-    .card { background: #1e1e1e; border: 1px solid #333; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; }
-    .status { margin-bottom: 20px; font-size: 15px; color: #aaa; word-break: break-all; }
-    .btn { display: block; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .btn-share { background: #2563eb; color: white; margin-top: 12px; }
-    .btn-share:active { background: #1d4ed8; }
-    .upload-area { border: 2px dashed #444; border-radius: 12px; padding: 24px; margin-top: 24px; cursor: pointer; }
-    input[type="file"] { display: none; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 15%, #0f2b48 0%, #030712 85%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 20px;
+      padding: 26px 20px;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.2);
+      text-align: center;
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    }
+
+    .tagline {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    .chamber {
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 18px 12px;
+      margin-bottom: 18px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-text {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .file-display {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .btn-beam {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(56, 189, 248, 0.35);
+      margin-bottom: 16px;
+    }
+
+    .btn-beam:active {
+      filter: brightness(1.2);
+    }
+
+    .upload-zone {
+      border: 1px dashed rgba(56, 189, 248, 0.5);
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.8);
+      cursor: pointer;
+      color: #7dd3fc;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <div id="fileInfo" class="status">Verificando último arquivo...</div>
+  <div class="container">
+    <div class="title">BeamShare</div>
+    <div class="tagline">Molecular File Relocation</div>
 
-    <!-- Botão principal focado no Android -->
-    <button id="btnShare" class="btn-share" style="display: none;">COMPARTILHAR ARQUIVO</button>
+    <div class="chamber">
+      <div id="statusLabel" class="status-text">Telemetria Ativa</div>
+      <div id="fileInfo" class="file-display">A sincronizar com o Drive...</div>
+    </div>
 
-    <!-- Área secundária de envio (para quando abrir no PC) -->
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <span id="uploadText">Carregar novo arquivo (PC)</span>
+    <!-- Botão com clique directo para o menu nativo do Android -->
+    <button id="btnShare" class="btn-beam" style="display: none;">
+      DESMATERIALIZAR // COMPARTILHAR
+    </button>
+
+    <!-- Upload (PC) -->
+    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+      <span id="uploadText">[+] INJETAR NOVO ARQUIVO (PC)</span>
       <input type="file" id="fileInput">
     </div>
   </div>
@@ -37,38 +149,52 @@
     let currentBlob = null;
     let currentFileName = "";
 
-    // 1. Ao carregar a página no Android, busca o último arquivo disponível
     async function loadLatestFile() {
       const info = document.getElementById("fileInfo");
+      const statusLabel = document.getElementById("statusLabel");
       const btn = document.getElementById("btnShare");
+
+      statusLabel.innerText = "A consultar Drive...";
+      info.innerText = "A ligar ao servidor...";
+
       try {
-        info.innerText = "Buscando arquivo no Drive...";
-        const res = await fetch(SCRIPT_URL);
+        const res = await fetch(SCRIPT_URL, {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
         if (data.status === "success") {
           currentFileName = data.name;
-          info.innerHTML = `Pronto: <b>${data.name}</b>`;
+          statusLabel.innerText = "● Padrão Bloqueado";
+          statusLabel.style.color = "#4ade80";
+          info.innerText = data.name;
 
-          // Converte Base64 para Blob/File no navegador
+          // Conversão de base64 para binário nativo
           const byteCharacters = atob(data.base64);
-          const byteNumbers = new Array(byteCharacters.length);
+          const byteArray = new Uint8Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+            byteArray[i] = byteCharacters.charCodeAt(i);
           }
-          const byteArray = new Uint8Array(byteNumbers);
           currentBlob = new File([byteArray], data.name, { type: data.mimeType });
 
           btn.style.display = "block";
         } else {
-          info.innerText = "Nenhum arquivo encontrado no Drive.";
+          statusLabel.innerText = "Buffer Vazio";
+          info.innerText = "Nenhum ficheiro encontrado.";
+          btn.style.display = "none";
         }
-      } catch (e) {
-        info.innerText = "Erro ao carregar: " + e.message;
+      } catch (err) {
+        statusLabel.innerText = "Falha de Leitura";
+        statusLabel.style.color = "#f87171";
+        info.innerText = "Erro: " + err.message;
+        btn.style.display = "none";
       }
     }
 
-    // 2. Dispara a folha de compartilhamento nativa do Android (1 toque)
+    // Acção nativa de 1 clique
     document.getElementById("btnShare").addEventListener("click", async () => {
       if (!currentBlob) return;
 
@@ -78,15 +204,43 @@
             files: [currentBlob],
             title: currentFileName
           });
-        } catch (err) {
-          if (err.name !== "AbortError") alert("Erro ao compartilhar: " + err);
+        } catch (e) {
+          if (e.name !== "AbortError") alert("Erro: " + e.message);
         }
       } else {
-        alert("O compartilhamento nativo de arquivos não é suportado por este navegador.");
+        alert("O seu browser não suporta a partilha directa de ficheiros.");
       }
     });
 
-    // 3. Envio de arquivo (usado quando abrir no PC)
+    // Envio pelo PC
     document.getElementById("fileInput").addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (!file)
+      if (!file) return;
+
+      const uploadText = document.getElementById("uploadText");
+      uploadText.innerText = "A enviar ficheiro...";
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+              name: file.name,
+              mimeType: file.type || "application/octet-stream",
+              base64: reader.result
+            })
+          });
+          uploadText.innerText = "Ficheiro Injetado! A atualizar...";
+          loadLatestFile();
+        } catch (err) {
+          uploadText.innerText = "Erro no envio.";
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    loadLatestFile();
+  </script>
+</body>
+</html>
