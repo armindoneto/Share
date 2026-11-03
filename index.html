@@ -168,7 +168,7 @@
 
         if (data.status === "success") {
           currentFileName = data.name;
-          statusLabel.innerText = "● Padrão Bloqueado";
+          statusLabel.innerText = "● Arquivo Carregado";
           statusLabel.style.color = "#4ade80";
           info.innerText = data.name;
 
@@ -231,7 +231,7 @@
               base64: reader.result
             })
           });
-          uploadText.innerText = "Arquivo Injetado! Atualizando...";
+          uploadText.innerText = "Arquivo Carregado! Atualizando...";
           loadLatestFile();
         } catch (err) {
           uploadText.innerText = "Erro no envio.";
