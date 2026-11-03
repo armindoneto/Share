@@ -2,134 +2,91 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeamShare</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background: #030712;
-      color: #f8fafc;
-      min-height: 100vh;
-      padding: 24px 16px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 420px;
-      margin: 40px auto 0 auto;
-      background: #0f172a;
-      border: 1px solid #38bdf8;
-      border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
-      text-align: center;
-    }
-
-    .title {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: #ffffff;
-      text-shadow: 0 0 12px #38bdf8;
-    }
-
-    .tagline {
-      font-size: 11px;
-      letter-spacing: 2px;
-      color: #38bdf8;
-      text-transform: uppercase;
-      margin-top: 4px;
-      margin-bottom: 24px;
-    }
-
-    .chamber {
-      background: #030712;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-      min-height: 80px;
-    }
-
-    .status-text {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #38bdf8;
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .file-display {
-      font-size: 15px;
-      font-weight: 600;
-      color: #ffffff;
-      word-break: break-all;
-      line-height: 1.4;
-    }
-
-    .btn-beam {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      border-radius: 12px;
-      border: none;
-      background: #0284c7;
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
-      margin-bottom: 16px;
-    }
-
-    .btn-beam:active {
-      background: #0369a1;
-    }
-
-    .upload-zone {
-      border: 1px dashed #38bdf8;
-      border-radius: 12px;
-      padding: 14px;
-      background: #0b1329;
-      cursor: pointer;
-      color: #7dd3fc;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; padding: 24px; background: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #1e1e1e; border: 1px solid #333; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; }
+    .status { margin-bottom: 20px; font-size: 15px; color: #aaa; word-break: break-all; }
+    .btn { display: block; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .btn-share { background: #2563eb; color: white; margin-top: 12px; }
+    .btn-share:active { background: #1d4ed8; }
+    .upload-area { border: 2px dashed #444; border-radius: 12px; padding: 24px; margin-top: 24px; cursor: pointer; }
+    input[type="file"] { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <div class="title">BeamShare</div>
-    <div class="tagline">Molecular File Relocation</div>
+  <div class="card">
+    <div id="fileInfo" class="status">Verificando último arquivo...</div>
 
-    <div class="chamber">
-      <div id="statusLabel" class="status-text">Telemetria Ativa</div>
-      <div id="fileInfo" class="file-display">Sincronizando com o Drive...</div>
+    <!-- Botão principal focado no Android -->
+    <button id="btnShare" class="btn-share" style="display: none;">COMPARTILHAR ARQUIVO</button>
+
+    <!-- Área secundária de envio (para quando abrir no PC) -->
+    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+      <span id="uploadText">Carregar novo arquivo (PC)</span>
+      <input type="file" id="fileInput">
     </div>
+  </div>
 
-    <!-- Botão acionador nativo -->
-    <button id="btnShare" class="btn-beam" style="display: none;">
-      DESMATERIALIZAR // COMPARTILHAR
-    </button>
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXsT7cSaUJaI0PJKRIPosXYaaJb7nXMI5ehRUe1Rk0lgii1U9ifOpybtANpyZ0eluw/exec"; 
+    
+    let currentBlob = null;
+    let currentFileName = "";
 
-    <!-- Upload (PC) -->
-    <div class="upload-zone" onclick="document
+    // 1. Ao carregar a página no Android, busca o último arquivo disponível
+    async function loadLatestFile() {
+      const info = document.getElementById("fileInfo");
+      const btn = document.getElementById("btnShare");
+      try {
+        info.innerText = "Buscando arquivo no Drive...";
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+
+        if (data.status === "success") {
+          currentFileName = data.name;
+          info.innerHTML = `Pronto: <b>${data.name}</b>`;
+
+          // Converte Base64 para Blob/File no navegador
+          const byteCharacters = atob(data.base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          currentBlob = new File([byteArray], data.name, { type: data.mimeType });
+
+          btn.style.display = "block";
+        } else {
+          info.innerText = "Nenhum arquivo encontrado no Drive.";
+        }
+      } catch (e) {
+        info.innerText = "Erro ao carregar: " + e.message;
+      }
+    }
+
+    // 2. Dispara a folha de compartilhamento nativa do Android (1 toque)
+    document.getElementById("btnShare").addEventListener("click", async () => {
+      if (!currentBlob) return;
+
+      if (navigator.canShare && navigator.canShare({ files: [currentBlob] })) {
+        try {
+          await navigator.share({
+            files: [currentBlob],
+            title: currentFileName
+          });
+        } catch (err) {
+          if (err.name !== "AbortError") alert("Erro ao compartilhar: " + err);
+        }
+      } else {
+        alert("O compartilhamento nativo de arquivos não é suportado por este navegador.");
+      }
+    });
+
+    // 3. Envio de arquivo (usado quando abrir no PC)
+    document.getElementById("fileInput").addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file)
