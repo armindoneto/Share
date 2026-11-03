@@ -98,6 +98,25 @@
       z-index: 2;
     }
 
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .brand-icon {
+      height: 64px;
+      width: auto;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.55));
+    }
+
+    .brand-text {
+      text-align: left;
+    }
+
     .title {
       font-size: 26px;
       font-weight: 800;
@@ -113,7 +132,6 @@
       color: #38bdf8;
       text-transform: uppercase;
       margin-top: 4px;
-      margin-bottom: 20px;
     }
 
     .chamber {
@@ -190,8 +208,13 @@
   <canvas id="sparkles"></canvas>
 
   <div class="container">
-    <div class="title">BeamShare</div>
-    <div class="tagline">Transferência Instantânea</div>
+    <div class="brand">
+      <img class="brand-icon" src="favicon.png" alt="">
+      <div class="brand-text">
+        <div class="title">BeamShare</div>
+        <div class="tagline">Transferência Instantânea</div>
+      </div>
+    </div>
 
     <div class="chamber">
       <div id="statusLabel" class="status-text">Telemetria Ativa</div>
