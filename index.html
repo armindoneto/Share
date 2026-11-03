@@ -2,120 +2,58 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quick Share Bridge</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>BeamShare // Quantum Uplink</title>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; padding: 24px; background: #121212; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-    .card { background: #1e1e1e; border: 1px solid #333; border-radius: 16px; padding: 24px; width: 100%; max-width: 420px; text-align: center; }
-    .status { margin-bottom: 20px; font-size: 15px; color: #aaa; word-break: break-all; }
-    .btn { display: block; width: 100%; padding: 18px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .btn-share { background: #2563eb; color: white; margin-top: 12px; }
-    .btn-share:active { background: #1d4ed8; }
-    .upload-area { border: 2px dashed #444; border-radius: 12px; padding: 24px; margin-top: 24px; cursor: pointer; }
-    input[type="file"] { display: none; }
-  </style>
-</head>
-<body>
-
-  <div class="card">
-    <div id="fileInfo" class="status">Verificando último arquivo...</div>
-
-    <!-- Botão principal focado no Android -->
-    <button id="btnShare" class="btn btn-share" style="display: none;">COMPARTILHAR ARQUIVO</button>
-
-    <!-- Área secundária de envio (para quando abrir no PC) -->
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-      <span id="uploadText">Carregar novo arquivo (PC)</span>
-      <input type="file" id="fileInput">
-    </div>
-  </div>
-
-  <script>
-    // Substitua pela URL da implantação do Apps Script
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXsT7cSaUJaI0PJKRIPosXYaaJb7nXMI5ehRUe1Rk0lgii1U9ifOpybtANpyZ0eluw/exec"; 
-    
-    let currentBlob = null;
-    let currentFileName = "";
-
-    // 1. Ao carregar a página no Android, busca o último arquivo disponível
-    async function loadLatestFile() {
-      const info = document.getElementById("fileInfo");
-      const btn = document.getElementById("btnShare");
-      try {
-        info.innerText = "Buscando arquivo no Drive...";
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-
-        if (data.status === "success") {
-          currentFileName = data.name;
-          info.innerHTML = `Pronto: <b>${data.name}</b>`;
-
-          // Converte Base64 para Blob/File no navegador
-          const byteCharacters = atob(data.base64);
-          const byteNumbers = new Array(byteCharacters.length);
-          for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-          }
-          const byteArray = new Uint8Array(byteNumbers);
-          currentBlob = new File([byteArray], data.name, { type: data.mimeType });
-
-          btn.style.display = "block";
-        } else {
-          info.innerText = "Nenhum arquivo encontrado no Drive.";
-        }
-      } catch (e) {
-        info.innerText = "Erro ao carregar: " + e.message;
-      }
+    :root {
+      --cyan: #38bdf8;
+      --cyan-bright: #7dd3fc;
+      --cyan-glow: rgba(56, 189, 248, 0.4);
+      --amber: #fbbf24;
+      --amber-glow: rgba(251, 191, 36, 0.35);
+      --dark-core: #030712;
+      --panel-bg: rgba(15, 23, 42, 0.75);
     }
 
-    // 2. Dispara a folha de compartilhamento nativa do Android (1 toque)
-    document.getElementById("btnShare").addEventListener("click", async () => {
-      if (!currentBlob) return;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Courier New", monospace;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-      if (navigator.canShare && navigator.canShare({ files: [currentBlob] })) {
-        try {
-          await navigator.share({
-            files: [currentBlob],
-            title: currentFileName
-          });
-        } catch (err) {
-          if (err.name !== "AbortError") alert("Erro ao compartilhar: " + err);
-        }
-      } else {
-        alert("O compartilhamento nativo de arquivos não é suportado por este navegador.");
-      }
-    });
+    body {
+      background: radial-gradient(circle at center, #0b1329 0%, var(--dark-core) 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-    // 3. Envio de arquivo (usado quando abrir no PC)
-    document.getElementById("fileInput").addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    /* Grade de chão estilizada como plataforma de teletransporte */
+    body::before {
+      content: "";
+      position: absolute;
+      bottom: -150px;
+      width: 700px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, var(--cyan-glow) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: perspective(600px) rotateX(75deg);
+      pointer-events: none;
+      animation: pulsePad 4s ease-in-out infinite alternate;
+    }
 
-      const uploadText = document.getElementById("uploadText");
-      uploadText.innerText = "Enviando arquivo...";
+    @keyframes pulsePad {
+      0% { opacity: 0.3; filter: blur(30px); }
+      100% { opacity: 0.8; filter: blur(45px); }
+    }
 
-      const reader = new FileReader();
-      reader.onload = async () => {
-        try {
-          await fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-              name: file.name,
-              mimeType: file.type || "application/octet-stream",
-              base64: reader.result
-            })
-          });
-          uploadText.innerText = "Arquivo enviado! Recarregando...";
-          loadLatestFile();
-        } catch (err) {
-          uploadText.innerText = "Erro no envio.";
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    loadLatestFile();
-  </script>
-</body>
-</html>
+    .container {
+      width
