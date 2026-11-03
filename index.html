@@ -8,52 +8,219 @@
     :root {
       --cyan: #38bdf8;
       --cyan-bright: #7dd3fc;
-      --cyan-glow: rgba(56, 189, 248, 0.4);
-      --amber: #fbbf24;
-      --amber-glow: rgba(251, 191, 36, 0.35);
+      --cyan-glow: rgba(56, 189, 248, 0.45);
       --dark-core: #030712;
-      --panel-bg: rgba(15, 23, 42, 0.75);
+      --panel-bg: rgba(15, 23, 42, 0.88);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Courier New", monospace;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at center, #0b1329 0%, var(--dark-core) 100%);
+      background-color: var(--dark-core);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(14, 116, 144, 0.35) 0%, transparent 60%),
+        radial-gradient(circle at 50% 90%, rgba(2, 132, 199, 0.25) 0%, transparent 70%);
       color: #f8fafc;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* Grade de chão estilizada como plataforma de teletransporte */
-    body::before {
-      content: "";
-      position: absolute;
-      bottom: -150px;
-      width: 700px;
-      height: 400px;
-      background: radial-gradient(ellipse at center, var(--cyan-glow) 0%, transparent 70%);
-      border-radius: 50%;
-      transform: perspective(600px) rotateX(75deg);
-      pointer-events: none;
-      animation: pulsePad 4s ease-in-out infinite alternate;
-    }
-
-    @keyframes pulsePad {
-      0% { opacity: 0.3; filter: blur(30px); }
-      100% { opacity: 0.8; filter: blur(45px); }
+      padding: 16px;
     }
 
     .container {
-      width
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel-bg);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 20px;
+      padding: 28px 20px;
+      box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 20px rgba(56, 189, 248, 0.2);
+      backdrop-filter: blur(12px);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Cabeçalho */
+    .brand {
+      margin-bottom: 24px;
+    }
+
+    .title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #ffffff;
+      text-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    .tagline {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cyan-bright);
+      opacity: 0.75;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Câmara do Teletransporte */
+    .transporter-chamber {
+      position: relative;
+      min-height: 150px;
+      margin: 15px 0 20px;
+      border-radius: 14px;
+      background: rgba(3, 7, 18, 0.7);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    /* Feixes de energia verticais */
+    .transporter-chamber::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 22px,
+        rgba(56, 189, 248, 0.12) 24px,
+        transparent 26px
+      );
+      animation: beamPulse 2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes beamPulse {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.8; }
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--cyan-bright);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      position: relative;
+      z-index: 1;
+    }
+
+    .file-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      word-break: break-all;
+      line-height: 1.4;
+      position: relative;
+      z-index: 1;
+      padding: 0 8px;
+    }
+
+    /* Botão Principal: 1 Toque para Share Sheet */
+    .btn-beam {
+      width: 100%;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 20px var(--cyan-glow);
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .btn-beam:active {
+      filter: brightness(1.2);
+      transform: scale(0.99);
+    }
+
+    /* Área de Injeção de Arquivo (Upload PC) */
+    .uplink-zone {
+      border: 1px dashed rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(15, 23, 42, 0.5);
+      cursor: pointer;
+    }
+
+    .uplink-zone:hover {
+      border-color: var(--cyan-bright);
+    }
+
+    .uplink-label {
+      font-size: 12px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Ponto luminoso pulsante */
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan-bright);
+      box-shadow: 0 0 6px var(--cyan);
+      animation: blink 1s infinite alternate;
+    }
+
+    @keyframes blink {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="brand">
+      <div class="title">BeamShare</div>
+      <div class="tagline">Molecular File Relocation</div>
+    </header>
+
+    <div class="transporter-chamber">
+      <div id="beamStatus" class="status-badge">
+        <span class="pulse-dot"></span> Varrendo Buffer
+      </div>
+      <div id="fileDisplay" class="file-name">Carregando telemetria...</div>
+    </div>
+
+    <!-- Botão principal que abre o menu nativo do Android -->
+    <button id="btnBeam" class="btn-beam">
+      DESMATERIALIZAR // COMPARTILHAR
+    </button>
+
+    <!-- Injetor (PC) -->
+    <div class="uplink-zone" onclick="document.getElementById('quantumFileInput').click()">
+      <div class="uplink-label" id="
