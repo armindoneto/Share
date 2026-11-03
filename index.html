@@ -13,16 +13,17 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
+    html {
       background-color: #030712;
     }
 
     body {
-      background: radial-gradient(circle at 50% 15%, #0f2b48 0%, #030712 85%);
+      background-color: #030712;
+      background-image: radial-gradient(circle at 50% 15%, #0f2b48 0%, #030712 85%);
       color: #f8fafc;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -51,3 +52,45 @@
 
     .tagline {
       font-size: 11px;
+      letter-spacing: 2px;
+      color: #38bdf8;
+      text-transform: uppercase;
+      margin-top: 4px;
+      margin-bottom: 20px;
+    }
+
+    .chamber {
+      background: rgba(3, 7, 18, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 12px;
+      padding: 18px 12px;
+      margin-bottom: 18px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .status-text {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .file-display {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .btn-beam {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(25
