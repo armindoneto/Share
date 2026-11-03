@@ -58,22 +58,6 @@
       z-index: 0;
     }
 
-    /* Plataforma do transportador */
-    .pad {
-      position: fixed;
-      left: 50%;
-      bottom: -40px;
-      width: min(520px, 120vw);
-      height: 110px;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background: radial-gradient(ellipse at center, rgba(186, 230, 253, 0.55) 0%, rgba(56, 189, 248, 0.25) 35%, transparent 70%);
-      border: 1px solid rgba(125, 211, 252, 0.35);
-      box-shadow: 0 0 60px rgba(56, 189, 248, 0.45);
-      pointer-events: none;
-      z-index: 0;
-    }
-
     #sparkles {
       position: fixed;
       inset: 0;
@@ -96,6 +80,20 @@
       z-index: 2;
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
+    }
+
+    .footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+      text-align: center;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      color: rgba(186, 230, 253, 0.6);
+      pointer-events: none;
+      z-index: 2;
     }
 
     .title {
@@ -187,7 +185,6 @@
 <body>
 
   <div class="beam-column"></div>
-  <div class="pad"></div>
   <canvas id="sparkles"></canvas>
 
   <div class="container">
@@ -210,6 +207,8 @@
       <input type="file" id="fileInput">
     </div>
   </div>
+
+  <footer class="footer">2026 - v1.0.0 - Desenvolvido por Armindo Neto</footer>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXsT7cSaUJaI0PJKRIPosXYaaJb7nXMI5ehRUe1Rk0lgii1U9ifOpybtANpyZ0eluw/exec"; 
