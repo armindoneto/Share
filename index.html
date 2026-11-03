@@ -126,7 +126,7 @@
 
   <div class="container">
     <div class="title">BeamShare</div>
-    <div class="tagline">Molecular File Relocation</div>
+    <div class="tagline">Transferência Instantânea</div>
 
     <div class="chamber">
       <div id="statusLabel" class="status-text">Telemetria Ativa</div>
@@ -135,12 +135,12 @@
 
     <!-- Botão com clique direto para o menu nativo do Android -->
     <button id="btnShare" class="btn-beam" style="display: none;">
-      DESMATERIALIZAR // COMPARTILHAR
+      COMPARTILHAR
     </button>
 
     <!-- Upload (PC) -->
     <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-      <span id="uploadText">[+] INJETAR NOVO ARQUIVO (PC)</span>
+      <span id="uploadText">[+] CARREGAR NOVO ARQUIVO</span>
       <input type="file" id="fileInput">
     </div>
   </div>
@@ -170,7 +170,7 @@
 
         if (data.status === "success") {
           currentFileName = data.name;
-          statusLabel.innerText = "● Padrão Bloqueado";
+          statusLabel.innerText = "● Pronto Para Envio";
           statusLabel.style.color = "#4ade80";
           info.innerText = data.name;
 
@@ -233,7 +233,7 @@
               base64: reader.result
             })
           });
-          uploadText.innerText = "Arquivo Injetado! Atualizando...";
+          uploadText.innerText = "Arquivo Carregado!";
           loadLatestFile();
         } catch (err) {
           uploadText.innerText = "Erro no envio.";
