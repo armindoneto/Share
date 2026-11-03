@@ -14,23 +14,21 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 15%, #0f2b48 0%, #030712 85%);
+      background: #030712;
       color: #f8fafc;
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      padding: 24px 16px;
     }
 
     .container {
       width: 100%;
       max-width: 420px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      border-radius: 20px;
-      padding: 26px 20px;
-      box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(56, 189, 248, 0.2);
+      margin: 40px auto 0 auto;
+      background: #0f172a;
+      border: 1px solid #38bdf8;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
       text-align: center;
     }
 
@@ -40,7 +38,7 @@
       letter-spacing: 3px;
       text-transform: uppercase;
       color: #ffffff;
-      text-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+      text-shadow: 0 0 12px #38bdf8;
     }
 
     .tagline {
@@ -49,14 +47,89 @@
       color: #38bdf8;
       text-transform: uppercase;
       margin-top: 4px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
 
     .chamber {
-      background: rgba(3, 7, 18, 0.85);
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: #030712;
+      border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 12px;
-      padding: 18px 12px;
-      margin-bottom: 18px;
-      min-height: 90px;
-      display: flex
+      padding: 16px;
+      margin-bottom: 20px;
+      min-height: 80px;
+    }
+
+    .status-text {
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #38bdf8;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .file-display {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .btn-beam {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+      margin-bottom: 16px;
+    }
+
+    .btn-beam:active {
+      background: #0369a1;
+    }
+
+    .upload-zone {
+      border: 1px dashed #38bdf8;
+      border-radius: 12px;
+      padding: 14px;
+      background: #0b1329;
+      cursor: pointer;
+      color: #7dd3fc;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="title">BeamShare</div>
+    <div class="tagline">Molecular File Relocation</div>
+
+    <div class="chamber">
+      <div id="statusLabel" class="status-text">Telemetria Ativa</div>
+      <div id="fileInfo" class="file-display">Sincronizando com o Drive...</div>
+    </div>
+
+    <!-- Botão acionador nativo -->
+    <button id="btnShare" class="btn-beam" style="display: none;">
+      DESMATERIALIZAR // COMPARTILHAR
+    </button>
+
+    <!-- Upload (PC) -->
+    <div class="upload-zone" onclick="document
