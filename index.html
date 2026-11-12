@@ -180,8 +180,24 @@
       margin-bottom: 16px;
     }
 
-    .btn-beam:active {
+    .btn-beam:active,
+    .btn-download:active {
       filter: brightness(1.2);
+    }
+
+    .btn-download {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(2, 132, 199, 0.15);
+      color: #bae6fd;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: 16px;
     }
 
     .upload-zone {
@@ -200,6 +216,7 @@
     }
 
     .btn-beam:focus-visible,
+    .btn-download:focus-visible,
     .upload-zone:focus-visible {
       outline: 2px solid #7dd3fc;
       outline-offset: 3px;
@@ -239,6 +256,10 @@
       COMPARTILHAR
     </button>
 
+    <button type="button" id="btnDownload" class="btn-download" style="display: none;">
+      BAIXAR ARQUIVO
+    </button>
+
     <!-- Upload (PC) -->
     <button type="button" id="uploadBtn" class="upload-zone">
       <span id="uploadText">[+] CARREGAR NOVO ARQUIVO</span>
@@ -246,7 +267,7 @@
     <input type="file" id="fileInput">
   </div>
 
-  <footer class="footer">2026 - v1.0.0 - Desenvolvido por Armindo Neto</footer>
+  <footer class="footer">2026 - v1.1.0 - Desenvolvido por Armindo Neto</footer>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXsT7cSaUJaI0PJKRIPosXYaaJb7nXMI5ehRUe1Rk0lgii1U9ifOpybtANpyZ0eluw/exec"; 
@@ -258,6 +279,7 @@
       const info = document.getElementById("fileInfo");
       const statusLabel = document.getElementById("statusLabel");
       const btn = document.getElementById("btnShare");
+      const btnDownload = document.getElementById("btnDownload");
 
       statusLabel.innerText = "Consultando Drive...";
       statusLabel.style.color = "";
@@ -287,16 +309,21 @@
           currentBlob = new File([byteArray], data.name, { type: data.mimeType });
 
           btn.style.display = "block";
+          btnDownload.style.display = "block";
         } else {
+          currentBlob = null;
           statusLabel.innerText = "Buffer Vazio";
           info.innerText = "Nenhum arquivo encontrado.";
           btn.style.display = "none";
+          btnDownload.style.display = "none";
         }
       } catch (err) {
         statusLabel.innerText = "Falha de Leitura";
         statusLabel.style.color = "#f87171";
         info.innerText = "Erro: " + err.message;
+        currentBlob = null;
         btn.style.display = "none";
+        btnDownload.style.display = "none";
       }
     }
 
@@ -316,6 +343,19 @@
       } else {
         alert("O seu navegador não suporta o compartilhamento direto de arquivos.");
       }
+    });
+
+    // Download do arquivo pronto para envio
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      if (!currentBlob) return;
+      const url = URL.createObjectURL(currentBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = currentFileName || "arquivo";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
 
     // Envio pelo PC
