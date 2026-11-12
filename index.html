@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeamShare</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
@@ -180,11 +180,29 @@
       margin-bottom: 16px;
     }
 
-    .btn-beam:active {
+    .btn-beam:active,
+    .btn-download:active {
       filter: brightness(1.2);
     }
 
+    .btn-download {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(2, 132, 199, 0.15);
+      color: #bae6fd;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
     .upload-zone {
+      display: block;
+      width: 100%;
       border: 1px dashed rgba(56, 189, 248, 0.5);
       border-radius: 12px;
       padding: 14px;
@@ -195,6 +213,18 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
+    }
+
+    .btn-beam:focus-visible,
+    .btn-download:focus-visible,
+    .upload-zone:focus-visible {
+      outline: 2px solid #7dd3fc;
+      outline-offset: 3px;
+    }
+
+    .upload-zone:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
     input[type="file"] {
@@ -226,14 +256,18 @@
       COMPARTILHAR
     </button>
 
+    <button type="button" id="btnDownload" class="btn-download" style="display: none;">
+      BAIXAR ARQUIVO
+    </button>
+
     <!-- Upload (PC) -->
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+    <button type="button" id="uploadBtn" class="upload-zone">
       <span id="uploadText">[+] CARREGAR NOVO ARQUIVO</span>
-      <input type="file" id="fileInput">
-    </div>
+    </button>
+    <input type="file" id="fileInput">
   </div>
 
-  <footer class="footer">2026 - v1.0.0 - Desenvolvido por Armindo Neto</footer>
+  <footer class="footer">2026 - v1.1.0 - Desenvolvido por Armindo Neto</footer>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXsT7cSaUJaI0PJKRIPosXYaaJb7nXMI5ehRUe1Rk0lgii1U9ifOpybtANpyZ0eluw/exec"; 
@@ -245,8 +279,10 @@
       const info = document.getElementById("fileInfo");
       const statusLabel = document.getElementById("statusLabel");
       const btn = document.getElementById("btnShare");
+      const btnDownload = document.getElementById("btnDownload");
 
       statusLabel.innerText = "Consultando Drive...";
+      statusLabel.style.color = "";
       info.innerText = "Conectando ao servidor...";
 
       try {
@@ -273,16 +309,21 @@
           currentBlob = new File([byteArray], data.name, { type: data.mimeType });
 
           btn.style.display = "block";
+          btnDownload.style.display = "block";
         } else {
+          currentBlob = null;
           statusLabel.innerText = "Buffer Vazio";
           info.innerText = "Nenhum arquivo encontrado.";
           btn.style.display = "none";
+          btnDownload.style.display = "none";
         }
       } catch (err) {
         statusLabel.innerText = "Falha de Leitura";
         statusLabel.style.color = "#f87171";
         info.innerText = "Erro: " + err.message;
+        currentBlob = null;
         btn.style.display = "none";
+        btnDownload.style.display = "none";
       }
     }
 
@@ -304,18 +345,53 @@
       }
     });
 
+    // Download do arquivo pronto para envio
+    document.getElementById("btnDownload").addEventListener("click", () => {
+      if (!currentBlob) return;
+      const url = URL.createObjectURL(currentBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = currentFileName || "arquivo";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+
     // Envio pelo PC
-    document.getElementById("fileInput").addEventListener("change", (e) => {
+    const UPLOAD_LABEL = "[+] CARREGAR NOVO ARQUIVO";
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadText = document.getElementById("uploadText");
+    const fileInput = document.getElementById("fileInput");
+    let uploadResetTimer = null;
+
+    function setUploadText(text, resetAfterMs) {
+      clearTimeout(uploadResetTimer);
+      uploadText.innerText = text;
+      if (resetAfterMs) {
+        uploadResetTimer = setTimeout(() => { uploadText.innerText = UPLOAD_LABEL; }, resetAfterMs);
+      }
+    }
+
+    uploadBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
+      // Limpa o input para permitir selecionar o mesmo arquivo de novo
+      e.target.value = "";
       if (!file) return;
 
-      const uploadText = document.getElementById("uploadText");
-      uploadText.innerText = "Enviando arquivo...";
+      setUploadText("Enviando arquivo...");
+      uploadBtn.disabled = true;
 
       const reader = new FileReader();
+      reader.onerror = () => {
+        uploadBtn.disabled = false;
+        setUploadText("Erro ao ler o arquivo.", 4000);
+      };
       reader.onload = async () => {
         try {
-          await fetch(SCRIPT_URL, {
+          const res = await fetch(SCRIPT_URL, {
             method: "POST",
             body: JSON.stringify({
               name: file.name,
@@ -323,10 +399,21 @@
               base64: reader.result
             })
           });
-          uploadText.innerText = "Arquivo Carregado!";
+          if (!res.ok) throw new Error("HTTP " + res.status);
+
+          // Se o servidor responder JSON com status, confere também
+          let data = null;
+          try { data = await res.json(); } catch (_) { /* resposta sem JSON */ }
+          if (data && data.status && data.status !== "success") {
+            throw new Error(data.message || "o servidor recusou o arquivo");
+          }
+
+          setUploadText("Arquivo Carregado!", 3000);
           loadLatestFile();
         } catch (err) {
-          uploadText.innerText = "Erro no envio.";
+          setUploadText("Erro no envio: " + err.message, 5000);
+        } finally {
+          uploadBtn.disabled = false;
         }
       };
       reader.readAsDataURL(file);
