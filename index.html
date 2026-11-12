@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BeamShare</title>
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
@@ -185,6 +185,8 @@
     }
 
     .upload-zone {
+      display: block;
+      width: 100%;
       border: 1px dashed rgba(56, 189, 248, 0.5);
       border-radius: 12px;
       padding: 14px;
@@ -195,6 +197,17 @@
       font-weight: 700;
       letter-spacing: 1px;
       text-transform: uppercase;
+    }
+
+    .btn-beam:focus-visible,
+    .upload-zone:focus-visible {
+      outline: 2px solid #7dd3fc;
+      outline-offset: 3px;
+    }
+
+    .upload-zone:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
     input[type="file"] {
@@ -227,10 +240,10 @@
     </button>
 
     <!-- Upload (PC) -->
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+    <button type="button" id="uploadBtn" class="upload-zone">
       <span id="uploadText">[+] CARREGAR NOVO ARQUIVO</span>
-      <input type="file" id="fileInput">
-    </div>
+    </button>
+    <input type="file" id="fileInput">
   </div>
 
   <footer class="footer">2026 - v1.0.0 - Desenvolvido por Armindo Neto</footer>
@@ -247,6 +260,7 @@
       const btn = document.getElementById("btnShare");
 
       statusLabel.innerText = "Consultando Drive...";
+      statusLabel.style.color = "";
       info.innerText = "Conectando ao servidor...";
 
       try {
@@ -305,17 +319,39 @@
     });
 
     // Envio pelo PC
-    document.getElementById("fileInput").addEventListener("change", (e) => {
+    const UPLOAD_LABEL = "[+] CARREGAR NOVO ARQUIVO";
+    const uploadBtn = document.getElementById("uploadBtn");
+    const uploadText = document.getElementById("uploadText");
+    const fileInput = document.getElementById("fileInput");
+    let uploadResetTimer = null;
+
+    function setUploadText(text, resetAfterMs) {
+      clearTimeout(uploadResetTimer);
+      uploadText.innerText = text;
+      if (resetAfterMs) {
+        uploadResetTimer = setTimeout(() => { uploadText.innerText = UPLOAD_LABEL; }, resetAfterMs);
+      }
+    }
+
+    uploadBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
+      // Limpa o input para permitir selecionar o mesmo arquivo de novo
+      e.target.value = "";
       if (!file) return;
 
-      const uploadText = document.getElementById("uploadText");
-      uploadText.innerText = "Enviando arquivo...";
+      setUploadText("Enviando arquivo...");
+      uploadBtn.disabled = true;
 
       const reader = new FileReader();
+      reader.onerror = () => {
+        uploadBtn.disabled = false;
+        setUploadText("Erro ao ler o arquivo.", 4000);
+      };
       reader.onload = async () => {
         try {
-          await fetch(SCRIPT_URL, {
+          const res = await fetch(SCRIPT_URL, {
             method: "POST",
             body: JSON.stringify({
               name: file.name,
@@ -323,10 +359,21 @@
               base64: reader.result
             })
           });
-          uploadText.innerText = "Arquivo Carregado!";
+          if (!res.ok) throw new Error("HTTP " + res.status);
+
+          // Se o servidor responder JSON com status, confere também
+          let data = null;
+          try { data = await res.json(); } catch (_) { /* resposta sem JSON */ }
+          if (data && data.status && data.status !== "success") {
+            throw new Error(data.message || "o servidor recusou o arquivo");
+          }
+
+          setUploadText("Arquivo Carregado!", 3000);
           loadLatestFile();
         } catch (err) {
-          uploadText.innerText = "Erro no envio.";
+          setUploadText("Erro no envio: " + err.message, 5000);
+        } finally {
+          uploadBtn.disabled = false;
         }
       };
       reader.readAsDataURL(file);
